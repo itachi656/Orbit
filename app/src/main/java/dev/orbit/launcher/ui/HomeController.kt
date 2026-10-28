@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -182,7 +181,6 @@ class HomeController(
             .sortedByDescending { it.lastPlayed }
             .take(look.homeCount)
             .map { RowItem.GameItem(it) }
-        home += RowItem.Action("store", tr("Магазин"), tr("Безкоштовні ігри та твої джерела"), Icons.Filled.Storefront)
         if (look.homeShortcuts || home.isEmpty()) {
             shown.forEach { t ->
                 val count = t.items.count { it is RowItem.GameItem }
@@ -347,109 +345,8 @@ class HomeController(
             "wifi" -> { quick = null; host.openWifi() }
             "bt" -> { quick = null; host.openBluetooth() }
             "search" -> { quick = null; openSearch() }
-            "store" -> { quick = null; openStore() }
             "settings" -> { quick = null; openSettings() }
             "android" -> { quick = null; host.goAndroidHome() }
-        }
-    }
-
-    // ---------- Магазин ----------
-
-    var store by mutableStateOf<StoreUi?>(null)
-    /** Збільшується після завантаження — щоб оновились позначки «встановлено» */
-    var storeVersion by mutableIntStateOf(0)
-
-    fun openStore() {
-        menus.clear(); quick = null
-        store = StoreUi()
-        sounds.play(Sounds.S.Tab)
-        scope.launch {
-            app.store.loadCached()
-            app.store.refresh()
-        }
-    }
-
-    fun closeStore() { store = null; sounds.play(Sounds.S.Back) }
-
-    /** A на грі в магазині: завантажити, а якщо вже є — грати */
-    fun storeAction(item: dev.orbit.launcher.store.StoreItem) {
-        if (item.key in app.store.progress.value) return
-        app.store.installedFile(item)?.let { f ->
-            val g = games.firstOrNull { it.path == f.absolutePath }
-            if (g != null) { closeStore(); play(g); return }
-        }
-        if (!host.hasAllFiles()) { host.openAllFilesSettings(); return }
-        sounds.play(Sounds.S.Select)
-        showToast(tr("Завантажую: %s", item.title))
-        scope.launch {
-            app.store.download(item)
-                .onSuccess { f ->
-                    app.library.rescan()
-                    storeVersion++
-                    val g = app.library.games.value.firstOrNull { it.path == f.absolutePath }
-                    if (g != null) {
-                        // назва з магазину гарніша за ім'я файлу
-                        if (!g.titleLocked) app.library.edit(g.id) { it.copy(title = item.title) }
-                        app.art.fetchOne(g)
-                        // нема картинки з баз — беремо обкладинку з магазину
-                        if (app.library.get(g.id)?.cover == null && item.cover != null) app.art.importUrl(g, item.cover)
-                        artVersion++
-                    }
-                    showToast(tr("Готово: %s — вже в бібліотеці", item.title))
-                }
-                .onFailure { showToast(tr("Не вдалося завантажити: %s", it.message ?: "")) }
-        }
-    }
-
-    fun openStoreSources() = push(Menu(tr("Джерела магазину")) {
-        val counts = app.store.items.value.groupingBy { it.sourceId }.eachCount()
-        val errs = app.store.errors.value
-        buildList {
-            app.store.sources.value.forEach { src ->
-                val state = when {
-                    !src.enabled -> tr("вимк.")
-                    src.id in errs -> tr("помилка")
-                    else -> tr("ігор: %s", counts[src.id] ?: 0)
-                }
-                add(MenuItem(src.name, state) {
-                    push(Menu(src.name) {
-                        buildList {
-                            add(MenuItem(if (src.enabled) tr("Вимкнути") else tr("Увімкнути")) {
-                                app.store.setEnabled(src.id, !src.enabled)
-                                menus.removeLastOrNull()
-                                scope.launch { app.store.refresh() }
-                            })
-                            add(MenuItem(tr("Адреса"), src.url) {})
-                            if (!src.builtin) add(MenuItem(tr("Видалити джерело")) {
-                                app.store.remove(src.id); menus.removeLastOrNull()
-                            })
-                        }
-                    })
-                })
-            }
-            add(MenuItem(tr("+ Додати джерело за посиланням")) { openAddSourceForm() })
-            add(MenuItem(tr("Оновити каталоги")) { scope.launch { app.store.refresh(); showToast(tr("Каталоги оновлено")) } })
-        }
-    })
-
-    private fun openAddSourceForm() {
-        form = TextForm(
-            tr("Нове джерело"),
-            tr("Посилання на каталог у форматі Orbit (JSON). Ти відповідаєш за вміст джерел, які додаєш, — завантажуй лише ігри, на які маєш право."),
-            listOf(FormField(tr("Посилання (https://…)")), FormField(tr("Назва (необов'язково)"))),
-        ) { (url, name) ->
-            if (url.isBlank()) return@TextForm
-            showToast(tr("Перевіряю джерело…"))
-            scope.launch {
-                app.store.addSource(url, name.ifBlank { null })
-                    .onSuccess { n -> showToast(tr("Джерело додано: ігор %s", n)); menuVersion++ }
-                    .onFailure { e ->
-                        showToast(
-                            if (e is java.io.IOException) tr("Не вдалося відкрити посилання: %s", e.message ?: "")
-                            else tr("Це не схоже на каталог Orbit"),
-                        )
-                    }
-            }
         }
     }
 
@@ -508,7 +405,6 @@ class HomeController(
             return
         }
         menus.lastOrNull()?.let { handleMenu(it, b); return }
-        store?.let { handleStoreButton(it, b); return }
 
         // спільні для всіх тем кнопки
         when (b) {
@@ -662,7 +558,6 @@ class HomeController(
                     item.id == "settings" -> openSettings()
                     item.id == "add_android" -> openAppPicker()
                     item.id == "add_cloud" -> openMoonlightForm(null)
-                    item.id == "store" -> openStore()
                     item.id.startsWith("tab:") -> {
                         val i = tabs.indexOfFirst { it.id == item.id.removePrefix("tab:") }
                         if (i >= 0) { tabIndex = i; zone = Zone.Row }
@@ -862,7 +757,6 @@ class HomeController(
             listOf(
                 cycle("Мова / Language / Язык", I18n.languages, I18n.lang) { setLanguage(it) },
                 MenuItem(tr("Знайти гру"), "Select") { openSearch() },
-                MenuItem(tr("Магазин")) { menus.clear(); openStore() },
                 MenuItem(tr("Тема"), tr(theme.name)) { openThemePicker() },
                 MenuItem(tr("Вигляд")) { openLookMenu() },
                 MenuItem(tr("Бібліотека та ігри")) { openLibraryMenu() },

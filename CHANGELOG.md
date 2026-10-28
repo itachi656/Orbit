@@ -1,17 +1,8 @@
 # Changelog
 
-Development started before the project was put under git, so the git history begins at 0.6.0. Earlier versions are documented below.
+This is the `release/0.5.1` branch. Its code was reconstructed from 0.6.0 by removing the Store, because the original code of versions before 0.6.0 was not kept.
 
 ---
-
-## 0.6.0 — 2026-10-26 · Store
-
-- **Game store** with covers, descriptions, screenshots, system filters (LB/RB) and search via the Orbit keyboard.
-- **Download** button with progress. Games go into `ROMs/<system>` and show up in the library right away, with the store's cover and title. `.zip` archives are unpacked when the system's emulators can't open them.
-- **Built-in sources** of free, legal games: Homebrew Hub (about 1,000 games for GB/GBC/GBA/NES) and Universal-DB (3DS/DS homebrew).
-- **Custom sources by link** in the Orbit catalog format (JSON), for any system. The person who adds a source is responsible for its content.
-- **My PC** (`tools/orbit_share.py`): shares a game folder from a computer over home Wi-Fi as a store source.
-- Allowed `http://` for sources on the local network.
 
 ## 0.5.1 — 2026-10-25 · Winlator and GameNative games
 
@@ -23,7 +14,7 @@ Development started before the project was put under git, so the git history beg
 
 ## 0.5.0 — 2026-10-24 · Quick menu, new themes, play time
 
-- **Quick menu** on the Home/Guide button: resume game, brightness, volume, Wi-Fi, Bluetooth, search, store, settings.
+- **Quick menu** on the Home/Guide button: resume game, brightness, volume, Wi-Fi, Bluetooth, search, settings.
 - **Battery reminders** for the phone (15% / 5%) and the controller; controller battery is shown in the top bar.
 - **4 new themes:** Blades (Xbox 360), Channels (Wii), Spiral (Dreamcast), Pocket (PSP, color changes every month) — 12 in total.
 - **Background music:** a built-in synthesized ambient track or your own file, with its own volume.

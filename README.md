@@ -2,7 +2,9 @@
 
 Orbit turns an Android phone with a controller into something that feels like a console. It puts your emulators, Android games and PC streaming (Moonlight) into one fullscreen launcher, with 12 console-inspired themes, full controller navigation and automatic box art.
 
-**[⬇ Download the latest APK](../../releases/latest)** · Android 10+ · English / Українська / Русский
+> **Version 0.5.1 (rebuilt).** This branch is Orbit 0.5.1 — the last version before the Store. It was reconstructed from the 0.6.0 source by removing the Store, because the original 0.5.1 code was not kept. For the current version see the [main branch](../../tree/main).
+
+Android 10+ · English / Українська / Русский
 
 ---
 
@@ -26,10 +28,6 @@ Orbit turns an Android phone with a controller into something that feels like a 
   - the Steam store (for Steam games);
   - SteamGridDB (with your free API key);
   - libretro-thumbnails, using fuzzy name matching.
-- **Store tab:**
-  - 1,000+ free homebrew games from Homebrew Hub and Universal-DB;
-  - your own catalog sources;
-  - the **My PC** script for sharing games from your computer over Wi-Fi.
 - **Android games**, **Moonlight** streams that start directly in the game, and **Winlator / GameNative** PC games.
 - **Your stats:**
   - play time with weekly statistics;
@@ -98,37 +96,6 @@ Orbit looks for artwork in this order:
 4. **libretro-thumbnails** for retro systems. Fuzzy matching turns `pokemon_emerald.gba` into *Pokemon - Emerald Version*.
 
 Any image can be replaced from your gallery (**Y → Cover / Background / Logo from gallery**).
-
-## Store
-
-Open the Store from its tile on Home, from Menu → Store, or from the quick menu.
-
-- **Built-in sources** (free and legal):
-  - Homebrew Hub: indie games for GB, GBC, GBA and NES;
-  - Universal-DB: homebrew games for 3DS and DS.
-- **Your own sources:** in the Store press **Y → + Add source by link** and paste a link to a catalog in Orbit's format. Any system is supported:
-
-```json
-{
-  "name": "My collection",
-  "games": [
-    { "title": "Game title", "system": "psp", "url": "https://…/game.iso",
-      "cover": "https://…/cover.png", "description": "…", "developer": "…", "size": 123456 }
-  ]
-}
-```
-
-`system` is an Orbit system id or folder name: `nes`, `snes`, `n64`, `gb`, `gbc`, `gba`, `genesis`, `nds`, `n3ds`/`3ds`, `psx`/`ps1`, `ps2`, `psp`, `psvita`, `gc`, `wii`, `switch`, `windows`. Relative URLs are resolved against the catalog address.
-
-> **You are responsible for the sources you add.** Orbit does not provide or recommend sources of commercial games. Only download games you have the right to: your own dumps, homebrew and freeware.
-
-### My PC — share games from your computer over Wi-Fi
-
-```bash
-python3 tools/orbit_share.py /path/to/ROMs
-```
-
-The script prints a link like `http://192.168.0.10:8765/catalog.json`. Add it as a source in the Store. Use the same folder layout as on the phone. It only works inside your home network.
 
 ## Controls
 

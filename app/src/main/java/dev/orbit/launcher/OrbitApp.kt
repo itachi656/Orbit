@@ -11,7 +11,6 @@ class OrbitApp : Application() {
     lateinit var library: Library
     lateinit var launcher: GameLauncher
     lateinit var art: ArtFetcher
-    lateinit var store: dev.orbit.launcher.store.Store
 
     override fun onCreate() {
         super.onCreate()
@@ -19,6 +18,5 @@ class OrbitApp : Application() {
         library = Library(this, prefs)
         launcher = GameLauncher(this, prefs)
         art = ArtFetcher(this, prefs, library)
-        store = dev.orbit.launcher.store.Store(this, prefs)
     }
 }

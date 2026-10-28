@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.Wifi
@@ -74,7 +73,6 @@ fun HomeController.quickItems(): List<QuickItem> = buildList {
     add(QuickItem("wifi", "Wi-Fi", Icons.Filled.Wifi))
     add(QuickItem("bt", "Bluetooth", Icons.Filled.Bluetooth))
     add(QuickItem("search", tr("Пошук"), Icons.Filled.Search))
-    add(QuickItem("store", tr("Магазин"), Icons.Filled.Storefront))
     add(QuickItem("settings", tr("Налаштування"), Icons.Filled.Settings))
     add(QuickItem("android", tr("Домашній екран Android"), Icons.Filled.Home))
 }

@@ -26,7 +26,6 @@
         android:isGame="true"
         android:appCategory="game"
         android:largeHeap="true"
-        android:usesCleartextTraffic="true"
         android:supportsRtl="true">
 
         <activity

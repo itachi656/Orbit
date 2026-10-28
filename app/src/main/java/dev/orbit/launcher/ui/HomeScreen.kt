@@ -133,7 +133,6 @@ fun HomeScreen(c: HomeController) {
             }
 
             if (theme.scanlines) Scanlines()
-            c.store?.let { StoreOverlay(c, it, accent) }
             c.menus.forEach { MenuOverlay(c, it, accent) }
             c.form?.let { FormOverlay(c, it) }
             c.launching?.let { LaunchOverlay(c, it, accent) }
