@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Orbit" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/orbit_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <color name="orbit_bg">#05070F</color>
+    <color name="ic_bg">#0A0F24</color>
+</resources>

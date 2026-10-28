@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- GameSir (USB vendor id 0x3537). Перевір після підключення: adb shell dumpsys usb | grep -i vid -->
+    <usb-device vendor-id="13623" />
+    <!-- Геймпади в режимі Xbox/XInput (вендор-специфічний клас) -->
+    <usb-device class="255" subclass="93" protocol="1" />
+    <!-- Будь-який HID. UsbAttachActivity сама відкидає все, що не геймпад / не прив'язаний пристрій -->
+    <usb-device class="3" />
+</resources>

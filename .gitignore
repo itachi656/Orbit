@@ -1,0 +1,11 @@
+# build output and caches
+.gradle/
+.kotlin/
+build/
+local.properties
+*.iml
+.idea/
+
+# built APKs and audio previews live in Releases, not in git
+*.apk
+sounds_preview/
