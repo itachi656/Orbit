@@ -23,7 +23,7 @@ Development started before the project was put under git, so the git history beg
 
 ## 0.5.0 — 2026-10-24 · Quick menu, new themes, play time
 
-- **Quick menu** on the Home/Guide button: resume game, brightness, volume, Wi-Fi, Bluetooth, search, store, settings.
+- **Quick menu** on the Home/Guide button: resume game, brightness, volume, Wi-Fi, Bluetooth, search, settings (the Store item was added in 0.6.0).
 - **Battery reminders** for the phone (15% / 5%) and the controller; controller battery is shown in the top bar.
 - **4 new themes:** Blades (Xbox 360), Channels (Wii), Spiral (Dreamcast), Pocket (PSP, color changes every month) — 12 in total.
 - **Background music:** a built-in synthesized ambient track or your own file, with its own volume.
