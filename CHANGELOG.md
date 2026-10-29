@@ -4,6 +4,11 @@ Development started before the project was put under git, so the git history beg
 
 ---
 
+## 0.6.2 — 2026-10-29
+
+- Showcase: the picture panel works with any artwork. Without a wide background the whole cover is shown over a blurred copy of itself; apps show their icon; system shortcuts on Home show the console icon instead of a generic controller.
+- Wrap-around scrolling: in the Showcase game list, in the system picker and in all menus, going past the last item jumps to the first and back.
+
 ## 0.6.1 — 2026-10-29 · Showcase theme, deleting games
 
 - **Showcase theme** (13 in total): pick a system over slanted strips of its game art that slowly drift across the screen, with a large console icon and name in the middle. **A** opens the system's game list, **B** goes back.

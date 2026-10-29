@@ -549,8 +549,8 @@ class HomeController(
 
     private fun handleSystems(b: Btn) {
         when (b) {
-            Btn.Left -> switchTab(-1)
-            Btn.Right -> switchTab(1)
+            Btn.Left -> cycleTab(-1)
+            Btn.Right -> cycleTab(1)
             Btn.L2 -> switchTab(-4)
             Btn.R2 -> switchTab(4)
             Btn.A, Btn.Down -> openTabList()
@@ -559,10 +559,17 @@ class HomeController(
         }
     }
 
+    /** Систему вибирають по колу */
+    private fun cycleTab(delta: Int) {
+        if (tabs.size > 1) { tabIndex = Math.floorMod(tabIndex + delta, tabs.size); sounds.play(Sounds.S.Tab); host.haptic() }
+    }
+
     private fun handleSliceList(b: Btn) {
+        val n = tab.items.size
         when (b) {
-            Btn.Up -> setSel(sel - 1)
-            Btn.Down -> setSel(sel + 1)
+            // список по колу
+            Btn.Up -> if (n > 1) setSel(Math.floorMod(sel - 1, n))
+            Btn.Down -> if (n > 1) setSel(Math.floorMod(sel + 1, n))
             Btn.L2 -> setSel(sel - 8)
             Btn.R2 -> setSel(sel + 8)
             Btn.Left -> switchTab(-1)
@@ -759,8 +766,9 @@ class HomeController(
     private fun handleMenu(m: Menu, b: Btn) {
         val items = m.build()
         when (b) {
-            Btn.Up -> if (m.sel > 0) { m.sel--; move() }
-            Btn.Down -> if (m.sel < items.lastIndex) { m.sel++; move() }
+            // по колу: з останнього пункту — на перший і навпаки
+            Btn.Up -> if (items.size > 1) { m.sel = if (m.sel > 0) m.sel - 1 else items.lastIndex; move() }
+            Btn.Down -> if (items.size > 1) { m.sel = if (m.sel < items.lastIndex) m.sel + 1 else 0; move() }
             Btn.L1, Btn.L2 -> { m.sel = (m.sel - 8).coerceAtLeast(0); move() }
             Btn.R1, Btn.R2 -> { m.sel = (m.sel + 8).coerceAtMost(items.lastIndex); move() }
             Btn.A -> items.getOrNull(m.sel)?.let { run(it) }

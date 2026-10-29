@@ -54,6 +54,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
@@ -321,27 +323,54 @@ private fun SliceGameList(c: HomeController, accent: Color) {
             Box(
                 Modifier.fillMaxWidth().weight(1f)
                     .shadow(14.dp, shape).clip(shape)
-                    .background(Color(Systems.accent(game?.system ?: tab.id)).copy(alpha = 0.5f)),
+                    .background(Color(0xFF0E1324)),
                 contentAlignment = Alignment.Center,
             ) {
-                val art = game?.hero ?: game?.cover
-                Crossfade(art, animationSpec = tween(300), label = "art") { path ->
-                    if (path != null) {
-                        AsyncImage(
-                            model = artRequest(path, c.artVersion), contentDescription = null,
-                            contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
-                        )
-                    } else {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            val action = item as? RowItem.Action
-                            if (action != null) Icon(action.icon, null, tint = Color.White, modifier = Modifier.size(72.dp))
-                            else ConsoleIcon(game?.system ?: tab.id, Modifier.size(96.dp), tint = Color.White)
-                        }
-                    }
-                }
+                Crossfade(item, animationSpec = tween(300), label = "art") { PanelArt(c, it, tab) }
             }
             Spacer(Modifier.height(12.dp))
             Box(Modifier.padding(start = 8.dp)) { GameInfo(c, item, showButtons = false) }
+        }
+    }
+}
+
+/**
+ * Картинка в нахиленій панелі: широкий фон гри; якщо є лише обкладинка будь-якого розміру —
+ * вона ціла поверх розмитої себе; застосунок — його іконка; розділ — іконка консолі.
+ */
+@Composable
+private fun PanelArt(c: HomeController, item: RowItem?, tab: Tab) {
+    val game = (item as? RowItem.GameItem)?.game
+    when {
+        game?.hero != null -> AsyncImage(
+            model = artRequest(game.hero, c.artVersion), contentDescription = null,
+            contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+        )
+        game?.cover != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            AsyncImage(
+                model = artRequest(game.cover, c.artVersion), contentDescription = null,
+                contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().blur(28.dp).alpha(0.6f),
+            )
+            AsyncImage(
+                model = artRequest(game.cover, c.artVersion), contentDescription = game.title,
+                contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize().padding(vertical = 16.dp, horizontal = 40.dp),
+            )
+        }
+        game != null -> GameArt(game, c.artVersion, big = true)
+        else -> {
+            val action = item as? RowItem.Action
+            val sys = action?.system ?: tab.id.takeIf { action == null }
+            Box(
+                Modifier.fillMaxSize().background(
+                    Brush.linearGradient(listOf(Color(Systems.accent(sys ?: tab.id)).copy(alpha = 0.55f), Color(0xFF0E1324))),
+                ),
+                contentAlignment = Alignment.Center,
+            ) {
+                when {
+                    sys != null -> ConsoleIcon(sys, Modifier.size(150.dp), tint = Color.White)
+                    action != null -> Icon(action.icon, null, tint = Color.White, modifier = Modifier.size(84.dp))
+                }
+            }
         }
     }
 }
