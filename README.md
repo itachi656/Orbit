@@ -41,7 +41,7 @@ Orbit turns an Android phone with a controller into something that feels like a 
 - **Quick menu** on the Guide button: resume the game, brightness, volume, Wi-Fi, Bluetooth, battery of phone and controller.
 - **On-screen keyboard** built for controllers (EN/UK/RU layouts) and search by title, file name or acronym (`mhfu`).
 - **Polish:**
-  - boot intro;
+  - 6 boot intros to choose from (or random) and 4 app icons;
   - launch animations;
   - soft synthesized UI sounds;
   - optional ambient background music;

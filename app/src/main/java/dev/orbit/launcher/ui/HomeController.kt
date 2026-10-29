@@ -98,6 +98,9 @@ class HomeController(
         fun goAndroidHome()
         /** Заряд підключеного геймпада у %, якщо Android його віддає */
         fun controllerBattery(): Int?
+        /** Іконка застосунку на телефоні: id з [AppIcons] */
+        fun launcherIcon(): String
+        fun setLauncherIcon(id: String)
     }
 
     private val prefs = app.prefs
@@ -960,6 +963,18 @@ class HomeController(
         }
     })
 
+    private fun openIconPicker() = push(Menu(tr("Іконка Orbit")) {
+        val now = host.launcherIcon()
+        AppIcons.map { (id, name) ->
+            MenuItem(tr(name), if (id == now) "✓" else null) {
+                if (id != now) {
+                    host.setLauncherIcon(id)
+                    showToast(tr("Іконка зміниться за кілька секунд"))
+                }
+            }
+        }
+    })
+
     private fun openLookMenu() = push(Menu(tr("Вигляд")) {
         listOf(
             MenuItem(tr("Тема"), tr(theme.name)) { openThemePicker() },
@@ -986,8 +1001,16 @@ class HomeController(
                 listOf("warp" to tr("гіперстрибок"), "portal" to tr("портал"), "ps5" to tr("наїзд камери"), "none" to tr("без анімації")),
                 prefs.launchAnim,
             ) { prefs.launchAnim = it },
-            cycle(tr("Анімація запуску лаунчера"), listOf(true to tr("увімк."), false to tr("вимк.")), prefs.bootIntro) { prefs.bootIntro = it },
+            cycle(
+                tr("Анімація запуску лаунчера"),
+                BootStyles.map { it.first to tr(it.second) } + ("off" to tr("вимк.")),
+                if (prefs.bootIntro) prefs.bootStyle else "off",
+            ) {
+                prefs.bootIntro = it != "off"
+                if (it != "off") prefs.bootStyle = it
+            },
             MenuItem(tr("Показати анімацію запуску")) { menus.clear(); booting = true },
+            MenuItem(tr("Іконка Orbit"), tr(AppIcons.firstOrNull { it.first == host.launcherIcon() }?.second ?: "")) { openIconPicker() },
             cycle(tr("Колір з обкладинки гри"), listOf(false to tr("вимк."), true to tr("увімк.")), prefs.coverAccent) { prefs.coverAccent = it },
             cycle(tr("Звуки"), listOf(2 to tr("нормально"), 1 to tr("тихо"), 0 to tr("вимк.")), prefs.volume) { prefs.volume = it },
             cycle(tr("Фонова музика"), listOf("off" to tr("вимк."), "ambient" to tr("ембієнт Orbit"), "file" to tr("свій трек")), prefs.music) { m ->

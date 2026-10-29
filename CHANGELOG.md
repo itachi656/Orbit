@@ -4,6 +4,12 @@ Development started before the project was put under git, so the git history beg
 
 ---
 
+## 0.7.0 — 2026-10-29 · Intro animations and app icons
+
+- **4 new launcher intros:** Slices (colored slanted strips fly in and part to reveal the logo), Pulse (a heartbeat dot bursts into an orbit), Cartridge (a pixel logo slides down on a green handheld screen) and Hyperjump (stars stretch into lines, then a flash).
+- The intro is chosen in Menu → Appearance and is the same for every theme: Orbit, Slices, Pulse, Cartridge, Hyperjump, CRT, Random or off. The CRT power-on is no longer tied to the CRT theme.
+- **4 app icons** to choose from in Menu → Appearance → Orbit icon: Planet, D-pad, Stripes and Pixel. The icon on the phone changes in a few seconds.
+
 ## 0.6.2 — 2026-10-29
 
 - Showcase: the picture panel works with any artwork. Without a wide background the whole cover is shown over a blurred copy of itself; apps show their icon; system shortcuts on Home show the console icon instead of a generic controller.

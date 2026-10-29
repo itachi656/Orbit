@@ -184,6 +184,22 @@ class MainActivity : ComponentActivity(), HomeController.Host {
 
     private val homeAlias get() = ComponentName(this, "dev.orbit.launcher.HomeAlias")
 
+    override fun launcherIcon(): String = AppIcons.firstOrNull { (id, _) ->
+        packageManager.getComponentEnabledSetting(iconAlias(id)).let {
+            it == PackageManager.COMPONENT_ENABLED_STATE_ENABLED || (it == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT && id == "Planet")
+        }
+    }?.first ?: "Planet"
+
+    override fun setLauncherIcon(id: String) {
+        // спершу вмикаємо нову, потім вимикаємо решту — щоб іконка не зникла зовсім
+        packageManager.setComponentEnabledSetting(iconAlias(id), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+        AppIcons.map { it.first }.filter { it != id }.forEach {
+            packageManager.setComponentEnabledSetting(iconAlias(it), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+        }
+    }
+
+    private fun iconAlias(id: String) = ComponentName(this, "dev.orbit.launcher.Icon$id")
+
     override fun isHomeEnabled() =
         packageManager.getComponentEnabledSetting(homeAlias) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
 

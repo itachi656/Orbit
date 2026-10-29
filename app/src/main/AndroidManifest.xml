@@ -36,13 +36,57 @@
             android:screenOrientation="sensorLandscape"
             android:resizeableActivity="false"
             android:windowSoftInputMode="adjustPan"
-            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|smallestScreenSize|uiMode">
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|smallestScreenSize|uiMode" />
+
+        <!-- Іконки на вибір (Меню → Вигляд → Іконка): увімкнений рівно один псевдонім -->
+        <activity-alias
+            android:name=".IconPlanet"
+            android:targetActivity=".ui.MainActivity"
+            android:icon="@mipmap/ic_launcher"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconCross"
+            android:targetActivity=".ui.MainActivity"
+            android:icon="@mipmap/ic_launcher_cross"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconStripes"
+            android:targetActivity=".ui.MainActivity"
+            android:icon="@mipmap/ic_launcher_stripes"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconPixel"
+            android:targetActivity=".ui.MainActivity"
+            android:icon="@mipmap/ic_launcher_pixel"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
         <!-- Вмикається в налаштуваннях: робить Orbit доступним як домашній екран -->
         <activity-alias

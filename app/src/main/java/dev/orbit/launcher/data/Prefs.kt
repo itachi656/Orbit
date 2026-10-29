@@ -71,6 +71,8 @@ class Prefs(context: Context) {
     var searchLang by int("search_lang", 0)
     /** Анімація запуску самого лаунчера */
     var bootIntro by bool("boot_intro", true)
+    /** orbit | slices | pulse | cartridge | warp | crt | random */
+    var bootStyle by str("boot_style", "orbit")
 
     /** "vid:pid" прив'язаного геймпада, порожньо = будь-який геймпад */
     var boundController by str("bound_controller", "")

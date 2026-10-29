@@ -9,4 +9,6 @@
     </style>
     <color name="orbit_bg">#05070F</color>
     <color name="ic_bg">#0A0F24</color>
+    <color name="ic_bg_cross">#121212</color>
+    <color name="ic_bg_pixel">#8BAC0F</color>
 </resources>
