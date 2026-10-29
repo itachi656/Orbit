@@ -1,6 +1,6 @@
 # Orbit — a console-style game launcher for Android
 
-Orbit turns an Android phone with a controller into something that feels like a console. It puts your emulators, Android games and PC streaming (Moonlight) into one fullscreen launcher, with 12 console-inspired themes, full controller navigation and automatic box art.
+Orbit turns an Android phone with a controller into something that feels like a console. It puts your emulators, Android games and PC streaming (Moonlight) into one fullscreen launcher, with 13 console-inspired themes, full controller navigation and automatic box art.
 
 **[⬇ Download the latest APK](../../releases/latest)** · Android 10+ · English / Українська / Русский
 
@@ -8,7 +8,7 @@ Orbit turns an Android phone with a controller into something that feels like a 
 
 ## Highlights
 
-- **12 themes with their own layouts:**
+- **13 themes with their own layouts:**
   - Orbit (PS5-style row);
   - Waves (PS3 XMB);
   - Neon light/dark (Switch);
@@ -19,7 +19,8 @@ Orbit turns an Android phone with a controller into something that feels like a 
   - Blades (Xbox 360);
   - Channels (Wii);
   - Spiral (Dreamcast);
-  - Pocket (PSP, color changes every month).
+  - Pocket (PSP, color changes every month);
+  - Showcase (system picker over slanted strips of game art, like ES-DE).
 - **One-tap launching** straight into the game, with no emulator menus in between. Launch profiles for 50+ standalone emulators come from ES-DE; RetroArch is only a fallback.
 - **Automatic artwork:**
   - your own files;
@@ -31,6 +32,7 @@ Orbit turns an Android phone with a controller into something that feels like a 
   - your own catalog sources;
   - the **My PC** script for sharing games from your computer over Wi-Fi.
 - **Android games**, **Moonlight** streams that start directly in the game, and **Winlator / GameNative** PC games.
+- **Delete games** you no longer want, straight from the game options.
 - **Your stats:**
   - play time with weekly statistics;
   - collections and favorites;

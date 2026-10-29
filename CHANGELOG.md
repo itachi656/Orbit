@@ -4,6 +4,12 @@ Development started before the project was put under git, so the git history beg
 
 ---
 
+## 0.6.1 — 2026-10-29 · Showcase theme, deleting games
+
+- **Showcase theme** (13 in total): pick a system over slanted strips of its game art that slowly drift across the screen, with a large console icon and name in the middle. **A** opens the system's game list, **B** goes back.
+- **Delete game** in the game options (**Y**): removes the game's files from the phone, including `.cue` tracks, discs from `.m3u`, and the whole folder for `EBOOT.PBP` games. Asks first, with the cursor on *Cancel*.
+- UI sounds now follow the phone's media volume and stay quiet in silent / vibrate mode.
+
 ## 0.6.0 — 2026-10-26 · Store
 
 - **Game store** with covers, descriptions, screenshots, system filters (LB/RB) and search via the Orbit keyboard.

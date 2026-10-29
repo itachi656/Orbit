@@ -1,6 +1,8 @@
 package dev.orbit.launcher.ui
 
+import android.content.Context
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.AudioFormat
 import android.media.AudioTrack
 import kotlin.math.PI
@@ -12,8 +14,11 @@ import kotlin.math.sin
 /**
  * М'які синтезовані звуки інтерфейсу — без жодних аудіофайлів.
  * Теплий тембр (тон + тихий обертон), плавна атака без клацання, ноти з мажорної гами.
+ * Грають з медіа-гучністю телефона і мовчать у беззвучному / вібро-режимі.
  */
-class Sounds {
+class Sounds(context: Context) {
+    private val audio = context.getSystemService(AudioManager::class.java)
+
     enum class S { Move, Tab, Select, Back, Boot }
 
     /** Нота: частота, початок і тривалість (с), гучність, атака (с) */
@@ -73,7 +78,7 @@ class Sounds {
         return AudioTrack.Builder()
             .setAudioAttributes(
                 AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .build(),
             )
@@ -89,7 +94,7 @@ class Sounds {
     }
 
     fun play(s: S) {
-        if (level <= 0) return
+        if (level <= 0 || muted()) return
         val t = tracks[s] ?: return
         runCatching {
             t.setVolume(if (level == 1) 0.4f else 1f)
@@ -98,6 +103,11 @@ class Sounds {
             t.play()
         }
     }
+
+    /** Телефон у беззвучному / вібро-режимі або медіа-гучність на нулі */
+    private fun muted(): Boolean = runCatching {
+        audio.ringerMode != AudioManager.RINGER_MODE_NORMAL || audio.getStreamVolume(AudioManager.STREAM_MUSIC) == 0
+    }.getOrDefault(false)
 
     fun release() = tracks.values.forEach { it.release() }
 }

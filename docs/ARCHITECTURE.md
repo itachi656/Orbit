@@ -38,12 +38,13 @@ app/src/main/java/dev/orbit/launcher/
     ├── MainActivity.kt      the only screen; input, permissions, brightness/volume, battery
     ├── HomeController.kt    the UI "brain": state, tabs, button handling, all menus
     ├── HomeScreen.kt        screen root, backgrounds, tiles, top bar, button hints
-    ├── Layouts.kt           theme layouts: Row, XMB, Carousel, Grid, CRT, Channels, Blades
+    ├── Layouts.kt           theme layouts: Row, XMB, Carousel, Grid, CRT, Channels, Blades (Showcase is in SlicesLayout.kt)
     ├── Themes.kt            theme definitions (colors, font, layout)
     ├── Overlays.kt          side menus and forms
     ├── Search.kt            search and the on-screen keyboard (EN/UK/RU)
     ├── QuickMenu.kt         quick menu (Guide button)
     ├── StoreScreen.kt       store screen
+    ├── SlicesLayout.kt      Showcase theme: system picker and game list
     ├── LaunchFx.kt          game launch animations
     ├── BootIntro.kt         launcher boot animation
     ├── ConsoleIcons.kt      vector console silhouettes

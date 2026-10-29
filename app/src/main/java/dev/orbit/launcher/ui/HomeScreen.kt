@@ -130,6 +130,7 @@ fun HomeScreen(c: HomeController) {
                 Layout.List -> CrtLayout(c, accent)
                 Layout.Channels -> ChannelsLayout(c, accent)
                 Layout.Blades -> BladesLayout(c, accent)
+                Layout.Slices -> SlicesLayout(c, accent)
             }
 
             if (theme.scanlines) Scanlines()
@@ -673,7 +674,7 @@ fun HintBar(c: HomeController, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Hint(glyph: String, color: Color?, label: String, onClick: () -> Unit) {
+fun Hint(glyph: String, color: Color?, label: String, onClick: () -> Unit) {
     val theme = LocalTheme.current
     val col = color ?: theme.text
     Row(

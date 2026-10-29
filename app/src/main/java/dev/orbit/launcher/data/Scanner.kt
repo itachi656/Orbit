@@ -77,6 +77,34 @@ object RomScanner {
         return singles + discGames
     }
 
+    /**
+     * Усі файли гри на диску: сам файл, усе, на що посилаються .cue / .m3u, диски.
+     * Гра-папка («Гра/EBOOT.PBP») — уся папка, але лише якщо вона глибше папки системи.
+     */
+    fun filesOf(game: Game, root: File): List<File> {
+        val main = File(game.path ?: return emptyList())
+        val dir = main.parentFile ?: return listOf(main)
+        if (main.nameWithoutExtension.lowercase() in genericNames) {
+            val rel = dir.canonicalFile.relativeToOrNull(root.canonicalFile)?.invariantSeparatorsPath
+            if (rel != null && rel.split('/').size >= 2) return listOf(dir)
+        }
+        val out = linkedSetOf(main)
+        game.discs?.forEach { out += File(dir, it) }
+        // .m3u -> диски, .cue -> доріжки .bin
+        val queue = ArrayDeque(out.toList())
+        while (queue.isNotEmpty()) {
+            val f = queue.removeFirst()
+            val ext = f.extension.lowercase()
+            if (ext != "cue" && ext != "m3u" || !f.isFile) continue
+            runCatching { f.readLines() }.getOrDefault(emptyList()).forEach { line ->
+                val name = if (ext == "cue") Regex("FILE\\s+\"(.+?)\"", RegexOption.IGNORE_CASE).find(line)?.groupValues?.get(1)
+                else line.trim().takeIf { it.isNotEmpty() && !it.startsWith("#") }
+                if (name != null) File(f.parentFile, name).let { if (out.add(it)) queue += it }
+            }
+        }
+        return out.filter { it.exists() }
+    }
+
     /** Файли з «безликими» іменами — назва гри тоді в імені папки (PSP/PS1: Гра/EBOOT.PBP) */
     private val genericNames = setOf("eboot", "game", "disc", "disk", "rom", "main", "default", "boot", "index", "image", "track 1", "track01")
 

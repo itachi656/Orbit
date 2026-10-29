@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /** Як розкладені ігри на екрані — від цього залежить і керування */
-enum class Layout { Row, Xmb, Carousel, Grid, List, Channels, Blades }
+enum class Layout { Row, Xmb, Carousel, Grid, List, Channels, Blades, Slices }
 
 data class ThemeSpec(
     val id: String,
@@ -98,6 +98,11 @@ object Themes {
             "sunset", "Захід сонця", "Ряд плиток як Orbit, теплі кольори й анімований фон",
             Layout.Row, Color(0xFF1A0B1E), Color(0xF2261029), Color.White, Color(0xFFD9A7C7),
             accent = Color(0xFFFF7A59), background = "animated", corner = 18.dp,
+        ),
+        ThemeSpec(
+            "showcase", "Вітрина", "Як ES-DE: вибір системи на тлі нахилених смуг з артами ігор",
+            Layout.Slices, Color(0xFF07080C), Color(0xF0101218), Color.White, Color(0xFFC4C8D2),
+            accent = null, background = "plain", corner = 6.dp,
         ),
     )
 

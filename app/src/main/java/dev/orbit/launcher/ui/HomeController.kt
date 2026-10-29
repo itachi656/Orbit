@@ -106,7 +106,7 @@ class HomeController(
         /** Збільшуй, коли покращуєш пошук картинок — ігри без картинок перешукаються */
         const val ART_RULES = 4
     }
-    val sounds = Sounds().also { it.level = prefs.volume }
+    val sounds = Sounds(app).also { it.level = prefs.volume }
 
     var look by mutableStateOf(prefs.look())
         private set
@@ -116,7 +116,7 @@ class HomeController(
     var hasFiles by mutableStateOf(true)
     var tabIndex by mutableIntStateOf(0)
     private val selByTab = mutableStateMapOf<String, Int>()
-    var zone by mutableStateOf(Zone.Row)
+    var zone by mutableStateOf(if (Themes.byId(look.theme).layout == Layout.Slices) Zone.Tabs else Zone.Row)
     var actionIndex by mutableIntStateOf(0)
     val menus = mutableStateListOf<Menu>()
     var form by mutableStateOf<TextForm?>(null)
@@ -510,15 +510,17 @@ class HomeController(
         menus.lastOrNull()?.let { handleMenu(it, b); return }
         store?.let { handleStoreButton(it, b); return }
 
+        // у «Вітрині» на екрані систем гра не вибрана — Y/X нічого не роблять
+        val onSystems = theme.layout == Layout.Slices && zone == Zone.Tabs
         // спільні для всіх тем кнопки
         when (b) {
             Btn.L1 -> return switchTab(-1)
             Btn.R1 -> return switchTab(1)
             Btn.Start -> return openSettings()
             Btn.Select -> return openSearch()
-            Btn.Y -> { currentGame?.let(::openOptions); return }
+            Btn.Y -> { if (!onSystems) currentGame?.let(::openOptions); return }
             Btn.R3 -> { cycleSort(); return }
-            Btn.X -> { currentGame?.let(::toggleFavorite); return }
+            Btn.X -> { if (!onSystems) currentGame?.let(::toggleFavorite); return }
             else -> Unit
         }
         when (theme.layout) {
@@ -529,6 +531,45 @@ class HomeController(
             }
             Layout.Xmb, Layout.List, Layout.Blades -> handleVertical(b)
             Layout.Grid, Layout.Channels -> if (zone == Zone.Tabs) handleTabs(b) else handleGrid(b)
+            Layout.Slices -> if (zone == Zone.Tabs) handleSystems(b) else handleSliceList(b)
+        }
+    }
+
+    /** «Вітрина»: відкрити список ігор вибраної системи */
+    fun openTabList() {
+        if (tab.items.isEmpty()) return
+        zone = Zone.Row
+        sounds.play(Sounds.S.Select); host.haptic()
+    }
+
+    fun backToSystems() {
+        zone = Zone.Tabs
+        sounds.play(Sounds.S.Back)
+    }
+
+    private fun handleSystems(b: Btn) {
+        when (b) {
+            Btn.Left -> switchTab(-1)
+            Btn.Right -> switchTab(1)
+            Btn.L2 -> switchTab(-4)
+            Btn.R2 -> switchTab(4)
+            Btn.A, Btn.Down -> openTabList()
+            Btn.B -> if (tabIndex != 0) { tabIndex = 0; sounds.play(Sounds.S.Back) }
+            else -> Unit
+        }
+    }
+
+    private fun handleSliceList(b: Btn) {
+        when (b) {
+            Btn.Up -> setSel(sel - 1)
+            Btn.Down -> setSel(sel + 1)
+            Btn.L2 -> setSel(sel - 8)
+            Btn.R2 -> setSel(sel + 8)
+            Btn.Left -> switchTab(-1)
+            Btn.Right -> switchTab(1)
+            Btn.A -> current?.let(::activate)
+            Btn.B -> backToSystems()
+            else -> Unit
         }
     }
 
@@ -791,9 +832,37 @@ class HomeController(
                     scope.launch { app.library.remove(g.id) }
                     menus.clear()
                 })
+                if (g.kind == GameKind.ROM && g.path != null) add(MenuItem(tr("Видалити гру")) { confirmDelete(g) })
                 g.path?.let { add(MenuItem(tr("Файл"), it.substringAfterLast('/')) {}) }
             }
         })
+    }
+
+    /** Видалення гри з пам'яті телефона — з підтвердженням */
+    private fun confirmDelete(g: Game) {
+        val files = dev.orbit.launcher.data.RomScanner.filesOf(g, java.io.File(prefs.romRoot))
+        val size = files.sumOf { f -> if (f.isDirectory) f.walkTopDown().filter { it.isFile }.sumOf { it.length() } else f.length() }
+        val what = if (files.size == 1) files[0].name else tr("файлів: %s", files.size)
+        push(Menu(tr("Видалити «%s»?", g.title)) {
+            listOf(
+                MenuItem(tr("Так, видалити"), "$what · ${formatSize(size)}") {
+                    menus.clear()
+                    scope.launch {
+                        val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                            files.all { if (it.isDirectory) it.deleteRecursively() else it.delete() || !it.exists() }.also {
+                                // картинки гри, що лежать у самому Orbit
+                                listOfNotNull(g.cover, g.hero, g.logo).map { java.io.File(it) }
+                                    .filter { it.path.startsWith(app.filesDir.path) }.forEach { it.delete() }
+                            }
+                        }
+                        app.library.remove(g.id)
+                        sounds.play(Sounds.S.Back)
+                        showToast(if (ok) tr("Гру видалено") else tr("Не всі файли вдалося видалити"))
+                    }
+                },
+                MenuItem(tr("Скасувати")) { menus.removeLastOrNull() },
+            )
+        }.also { it.sel = 1 }) // курсор на «Скасувати», щоб не видалити випадковим подвійним A
     }
 
     private fun pickArt(g: Game, kind: String) = host.pickImage { uri ->
@@ -878,7 +947,7 @@ class HomeController(
         Themes.all.map { t ->
             MenuItem(tr(t.name), if (t.id == look.theme) "✓ " + tr(t.description) else tr(t.description)) {
                 prefs.theme = t.id
-                zone = Zone.Row
+                zone = if (t.layout == Layout.Slices) Zone.Tabs else Zone.Row
             }
         }
     })
