@@ -142,6 +142,9 @@ class ArtFetcher(context: Context, private val prefs: Prefs, private val library
             if (hero == null) hero = download("$cdn/library_hero.jpg", target("hero"))
             if (logo == null) logo = download("$cdn/logo.png", target("logo"))
         }
+        // 1в. Картинки, які передала програма Orbit PC (Epic, GOG тощо)
+        if (cover == null) game.coverUrl?.let { cover = download(it, target("cover")) }
+        if (hero == null) game.heroUrl?.let { hero = download(it, target("hero")) }
 
         // 2. SteamGridDB
         val sgdbKey = prefs.steamGridKey
@@ -191,8 +194,9 @@ class ArtFetcher(context: Context, private val prefs: Prefs, private val library
         }
     }
 
-    /** Номер гри в Steam: вміст .steam-файлу (так їх експортує GameNative) */
+    /** Номер гри в Steam: від Orbit PC або вміст .steam-файлу (так їх експортує GameNative) */
     private fun steamAppId(game: Game): Int? {
+        game.steamAppId?.let { return it }
         val path = game.path ?: return null
         if (!path.endsWith(".steam", ignoreCase = true)) return null
         return runCatching { File(path).readText().trim().toInt() }.getOrNull()

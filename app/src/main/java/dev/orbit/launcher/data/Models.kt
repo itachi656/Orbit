@@ -23,6 +23,12 @@ data class Game(
     /** Назва ПК у Moonlight та назва гри в Sunshine/GFE (для MOONLIGHT) */
     val pcName: String? = null,
     val appName: String? = null,
+    /** Гру додала програма Orbit PC — прибирається, коли її прибрали з Sunshine */
+    val fromPc: Boolean = false,
+    /** Номер гри в Steam і готові картинки від Orbit PC */
+    val steamAppId: Int? = null,
+    val coverUrl: String? = null,
+    val heroUrl: String? = null,
     /** Локальні файли артів */
     val cover: String? = null,
     val hero: String? = null,

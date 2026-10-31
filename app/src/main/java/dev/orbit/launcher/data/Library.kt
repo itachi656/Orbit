@@ -111,5 +111,36 @@ class Library(private val context: Context, private val prefs: Prefs) {
         save()
     }
 
+    /**
+     * Список ігор з Orbit PC: нові додаються, наявні оновлюються (час гри, улюблені, приховані лишаються),
+     * а ті, що раніше прийшли з цього ПК і зникли з Sunshine, прибираються. Повертає (додано, прибрано).
+     */
+    suspend fun syncPc(pc: String, apps: List<PcApp>): Pair<Int, Int> {
+        val wanted = apps.associateBy { "ml:$pc/${it.name}" }
+        var added = 0
+        var removed = 0
+        _games.update { list ->
+            val have = list.map { it.id }.toSet()
+            val kept = list.filter { g ->
+                val gone = g.fromPc && g.pcName == pc && g.id !in wanted
+                if (gone) removed++
+                !gone
+            }.map { g ->
+                val a = wanted[g.id] ?: return@map g
+                val changed = a.steam != g.steamAppId || a.cover != g.coverUrl || a.hero != g.heroUrl
+                g.copy(fromPc = true, steamAppId = a.steam, coverUrl = a.cover, heroUrl = a.hero,
+                    artChecked = g.artChecked && !(changed && g.cover == null))
+            }
+            val fresh = wanted.filterKeys { it !in have }.map { (id, a) ->
+                Game(id = id, title = a.name, kind = GameKind.MOONLIGHT, system = Systems.CLOUD, pcName = pc, appName = a.name,
+                    fromPc = true, steamAppId = a.steam, coverUrl = a.cover, heroUrl = a.hero)
+            }
+            added = fresh.size
+            kept + fresh
+        }
+        save()
+        return added to removed
+    }
+
     fun get(id: String) = _games.value.firstOrNull { it.id == id }
 }

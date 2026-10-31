@@ -52,6 +52,7 @@ app/src/main/java/dev/orbit/launcher/
     └── Music.kt             background music (synthesized ambient or user file)
 
 tools/orbit_share.py         "My PC": shares games from a computer as a store source
+tools/orbit_pc.py            "Orbit PC": finds PC games, writes them to Sunshine, serves the list to Orbit (port 8766)
 ```
 
 ## How it works

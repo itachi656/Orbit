@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storefront
@@ -26,6 +27,7 @@ import dev.orbit.launcher.data.DataMode
 import dev.orbit.launcher.data.Game
 import dev.orbit.launcher.data.GameKind
 import dev.orbit.launcher.data.Look
+import dev.orbit.launcher.data.PcLink
 import dev.orbit.launcher.data.Systems
 import dev.orbit.launcher.input.Btn
 import dev.orbit.launcher.launch.LaunchResult
@@ -170,6 +172,7 @@ class HomeController(
         val cloud = Tab(
             Systems.CLOUD, tr("Хмара"),
             items(visible.filter { it.kind == GameKind.MOONLIGHT }) +
+                RowItem.Action("pc_import", tr("Імпорт з ПК"), tr("Ігри, вибрані в програмі Orbit PC на комп'ютері"), Icons.Filled.Computer) +
                 RowItem.Action("add_cloud", tr("Додати гру з ПК"), tr("Стрім через Moonlight з твого ПК (Sunshine / Apollo / GeForce Experience)"), Icons.Filled.Cloud),
         )
         val favs = visible.filter { it.favorite }.takeIf { it.isNotEmpty() }?.let { Tab("fav", tr("★ Улюблене"), items(it)) }
@@ -247,6 +250,8 @@ class HomeController(
         lastScan = System.currentTimeMillis()
         val n = app.library.rescan()
         if (!quiet) showToast(tr("Знайдено ігор: %s", n))
+        // ПК, з якого вже імпортували: тихо підтягуємо зміни, якщо Orbit PC зараз доступна
+        if (prefs.pcHost.isNotBlank()) PcLink.fetch(prefs.pcHost, timeoutMs = 2000)?.let { applyPcList(it, quiet = true) }
         app.art.fetchMissing()
         artVersion++
     }
@@ -713,6 +718,7 @@ class HomeController(
                     item.id == "settings" -> openSettings()
                     item.id == "add_android" -> openAppPicker()
                     item.id == "add_cloud" -> openMoonlightForm(null)
+                    item.id == "pc_import" -> importFromPc()
                     item.id == "store" -> openStore()
                     item.id.startsWith("tab:") -> {
                         val i = tabs.indexOfFirst { it.id == item.id.removePrefix("tab:") }
@@ -1033,6 +1039,7 @@ class HomeController(
             add(MenuItem(tr("Вкладки зверху")) { openTabsMenu() })
             add(MenuItem(tr("Додати Android-гру")) { openAppPicker() })
             add(MenuItem(tr("Додати гру з ПК (Moonlight)")) { openMoonlightForm(null) })
+            add(MenuItem(tr("Імпорт з ПК (Orbit PC)"), prefs.pcHost.ifBlank { null }) { menus.clear(); importFromPc() })
             val hidden = games.count { it.hidden }
             add(MenuItem(tr("Приховані ігри"), "${hidden}") { if (hidden > 0) openHidden() })
             add(cycle(tr("Сортування (R3)"), sortModes, prefs.sortMode) { prefs.sortMode = it })
@@ -1296,6 +1303,49 @@ class HomeController(
             top.forEach { g -> add(MenuItem(g.title, formatDuration(g.playTime)) { menus.clear(); goToGame(g) }) }
         }
     })
+
+    /** Ігри з програми Orbit PC: спершу збережена адреса, потім пошук у мережі, інакше — ввести адресу */
+    private fun importFromPc(host: String? = null) {
+        scope.launch {
+            showToast(tr("Шукаю Orbit PC…"))
+            val list = if (host != null) PcLink.fetch(host)?.also { prefs.pcHost = host } else {
+                prefs.pcHost.takeIf { it.isNotBlank() }?.let { PcLink.fetch(it) }
+                    ?: PcLink.discover()?.let { found -> PcLink.fetch(found)?.also { prefs.pcHost = found } }
+            }
+            if (list == null) {
+                askPcHost(failed = host != null)
+                return@launch
+            }
+            applyPcList(list, quiet = false)
+        }
+    }
+
+    private suspend fun applyPcList(list: dev.orbit.launcher.data.PcList, quiet: Boolean) {
+        val (added, removed) = app.library.syncPc(list.pc, list.apps)
+        if (quiet && added == 0 && removed == 0) return
+        if (!quiet) {
+            tabIndex = tabs.indexOfFirst { it.id == Systems.CLOUD }.coerceAtLeast(0)
+            showToast(
+                if (added == 0 && removed == 0) tr("%s: нових ігор немає", list.pc)
+                else tr("%s: додано %s, прибрано %s", list.pc, added, removed) +
+                    if (added > 0) tr(". Відкрий цей ПК у Moonlight один раз, щоб він побачив нові ігри") else ""
+            )
+        }
+        app.art.fetchMissing()
+        artVersion++
+    }
+
+    private fun askPcHost(failed: Boolean) {
+        form = TextForm(
+            tr("Імпорт з ПК"),
+            (if (failed) tr("Не вдалося підключитись. ") else tr("ПК не знайдено в мережі. ")) +
+                tr("Запусти на комп'ютері Orbit PC (tools/orbit_pc.py) і введи адресу, яку вона показує внизу, наприклад 192.168.0.10 або адресу Tailscale."),
+            listOf(FormField(tr("Адреса ПК"), prefs.pcHost)),
+        ) { (host) ->
+            if (host.isBlank()) return@TextForm
+            importFromPc(host.trim())
+        }
+    }
 
     private fun openMoonlightForm(existing: Game?) {
         form = TextForm(

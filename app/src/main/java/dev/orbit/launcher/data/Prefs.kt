@@ -40,6 +40,8 @@ class Prefs(context: Context) {
 
     var romRoot by str("rom_root", "${Environment.getExternalStorageDirectory().absolutePath}/ROMs")
     var steamGridKey by str("sgdb_key", "")
+    /** Адреса ПК з програмою Orbit PC (знайдена сама або введена) */
+    var pcHost by str("pc_host", "")
     /** SAF-дозвіл на папку з іграми (content://…/tree/…) — його Orbit тимчасово передає емуляторам */
     var romTree by str("rom_tree", "")
     var artRules by int("art_rules", 0)

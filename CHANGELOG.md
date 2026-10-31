@@ -4,6 +4,12 @@ Development started before the project was put under git, so the git history beg
 
 ---
 
+## 0.8.0 — 2026-10-31 · Orbit PC
+
+- **Orbit PC** (`tools/orbit_pc.py`), a window for a Linux PC with Sunshine. It finds installed games from Steam (including non-Steam shortcuts), Heroic (Epic / GOG / Amazon / sideloaded), Lutris and Hydra. You can also add your own files (`.exe` runs through `umu-run`) or whole game folders. Tick what to stream and press *Save to Sunshine*: the games get covers, Sunshine restarts, and the original `apps.json` is backed up first. Anything that would be removed from Sunshine is listed for confirmation.
+- **Import from PC** in the Cloud tab: Orbit finds Orbit PC on the home network or asks for an address (Tailscale works). It adds every game with box art from Steam or Epic, and removes games that were taken out of Sunshine. After that, the list updates by itself whenever Orbit rescans.
+- After adding games, open the PC in Moonlight once: Moonlight looks games up in its own saved list.
+
 ## 0.7.0 — 2026-10-29 · Intro animations and app icons
 
 - **4 new launcher intros:** Slices (colored slanted strips fly in and part to reveal the logo), Pulse (a heartbeat dot bursts into an orbit), Cartridge (a pixel logo slides down on a green handheld screen) and Hyperjump (stars stretch into lines, then a flash).

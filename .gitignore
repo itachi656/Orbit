@@ -9,3 +9,4 @@ local.properties
 # built APKs and audio previews live in Releases, not in git
 *.apk
 sounds_preview/
+__pycache__/

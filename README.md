@@ -31,6 +31,7 @@ Orbit turns an Android phone with a controller into something that feels like a 
   - 1,000+ free homebrew games from Homebrew Hub and Universal-DB;
   - your own catalog sources;
   - the **My PC** script for sharing games from your computer over Wi-Fi.
+- **Orbit PC** for the computer: tick your Steam, Heroic, Lutris and Hydra games, and they land in Sunshine and in Orbit's Cloud tab.
 - **Android games**, **Moonlight** streams that start directly in the game, and **Winlator / GameNative** PC games.
 - **Delete games** you no longer want, straight from the game options.
 - **Your stats:**
@@ -89,6 +90,19 @@ For each game, export it once and it shows up in the **PC** tab. Nothing is adde
 ### Moonlight (stream from your PC)
 
 **Cloud** tab → **Add PC game**. Enter the PC name exactly as Moonlight shows it, and the app name exactly as it appears in Sunshine/Apollo (e.g. `Desktop`, `Steam Big Picture`). The stream then starts straight into that game.
+
+#### Orbit PC — add your PC games without typing (Linux + Sunshine)
+
+`tools/orbit_pc.py` is a small window for the computer. It finds installed games from **Steam** (and non-Steam shortcuts), **Heroic** (Epic, GOG, Amazon, sideloaded), **Lutris** and **Hydra**, and you can add your own files or whole game folders. Tick what you want and press **Save to Sunshine**: the games are added to Sunshine with covers, and Sunshine restarts.
+
+```bash
+sudo pacman -S pyside6          # or: pip install PySide6
+python3 tools/orbit_pc.py --install   # adds "Orbit PC" to the app menu
+```
+
+Then on the phone: **Cloud** tab → **Import from PC**. Orbit finds the computer on the home network (or asks for its address, e.g. a Tailscale one), adds every game with box art, and removes games you took out of Sunshine. Open the PC in Moonlight once after adding games, so Moonlight refreshes its own game list.
+
+Orbit PC uses port 8766 (TCP and UDP). With `ufw`, open it with `sudo ufw allow 8766`. Tick *Answer Orbit in the background* to start it with your session, so Orbit picks up changes without the window open.
 
 ## Artwork
 
